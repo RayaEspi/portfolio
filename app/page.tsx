@@ -14,13 +14,13 @@ export default function Home() {
                 sizes="100vw"
                 unoptimized
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/55 to-transparent" />
-            <header className="absolute top-0 left-0 right-0 z-20">
+            <div className="absolute inset-0 bg-gradient-to-r from-black  to-transparent" />
+            <header className="absolute top-0 left-0 right-0 z-20 ">
               <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
               <span className="text-sm tracking-[0.3em] uppercase text-[#FF9FC6]">
                 Raya Serahill
               </span>
-                <nav className="hidden gap-6 text-sm md:flex">
+                <nav className="hidden gap-6 text-sm md:flex text-shadow-lg/90">
                   <a href="#plugins" className="hover:text-[#FF9FC6] transition-colors">
                     Plugins
                   </a>
@@ -46,40 +46,40 @@ export default function Home() {
                     <span className="block">Raya</span>
                     <span className="block text-[#FF9FC6]">Serahill</span>
                   </h1>
-                  <p className="text-base text-zinc-300 sm:text-lg">
-                    Black &amp; pink coded. I build plugins, create game mods, and track way too
-                    many gambling stats for fun. This is my little corner of the internet.
+                  <p className="text-base text-zinc-300 sm:text-lg text-shadow-lg/90">
+                    Heyy! I'm Raya ^^ I build plugins, create cosmetic mods, and track way too
+                    many gambling stats for fun. This is my little website where I host my projects ^^
                   </p>
                   <div className="flex flex-wrap gap-4">
                     <a
                         href="#plugins"
-                        className="rounded-full px-6 py-2 text-sm font-medium bg-[#FF9FC6] text-black shadow-[0_0_20px_rgba(255,159,198,0.8)] transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(255,159,198,1)]"
+                        className="text-shadow-lg/30 rounded-full px-6 py-2 text-sm font-medium bg-[#FF9FC6] text-black shadow-[0_0_20px_rgba(255,159,198,0.8)] transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(255,159,198,1)]"
                     >
                       Explore my work
                     </a>
                     <a
                         href="#contact"
-                        className="rounded-full px-6 py-2 text-sm font-medium border border-[#FF9FC6]/70 text-[#FF9FC6] transition-all duration-200 hover:bg-[#FF9FC6] hover:text-black"
+                        className="text-shadow-lg/30 rounded-full px-6 py-2 text-sm font-medium border border-[#FF9FC6]/70 text-[#FF9FC6] transition-all duration-200 hover:bg-[#FF9FC6] hover:text-black"
                     >
                       Contact me on Discord
                     </a>
                   </div>
                   <div className="flex flex-wrap gap-3 pt-2 text-sm text-zinc-300">
                     <a
-                        href="https://instagram.com/"
+                        href="https://www.instagram.com/raya_serahill/"
                         target="_blank"
                         rel="noreferrer"
                         className="group flex items-center gap-2 rounded-full border border-zinc-700 px-4 py-1.5 transition-all hover:border-[#FF9FC6] hover:bg-[#FF9FC6]/5"
                     >
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#FF9FC6] group-hover:scale-125 transition-transform" />
+                      <span className="text-shadow-lg/90 h-1.5 w-1.5 rounded-full bg-[#FF9FC6] group-hover:scale-125 transition-transform" />
                       Instagram
                     </a>
                     <a
                         href="#gambling"
-                        className="group flex items-center gap-2 rounded-full border border-zinc-700 px-4 py-1.5 transition-all hover:border-[#FF9FC6] hover:bg-[#FF9FC6]/5"
+                        className="text-shadow-lg/90 group flex items-center gap-2 rounded-full border border-zinc-700 px-4 py-1.5 transition-all hover:border-[#FF9FC6] hover:bg-[#FF9FC6]/5"
                     >
                       <span className="h-1.5 w-1.5 rounded-full bg-[#FF9FC6] group-hover:scale-125 transition-transform" />
-                      Gambling hobby
+                       Espi Gamba
                     </a>
                   </div>
                 </div>
@@ -102,13 +102,13 @@ export default function Home() {
                 <h2 className="text-3xl font-semibold md:text-4xl">
                   Plugin development
                   <span className="block text-base font-normal text-[#FF9FC6]">
-                  Tools that make games feel better
+                  Tools that the make the game more exciting
                 </span>
                 </h2>
                 <p className="text-zinc-300">
-                  I build ffxiv plugins and tools that smooth out the rough edges, surface useful
+                  I build ffxiv plugins that smooth out the rough edges, surface useful
                   data, and add quality-of-life tweaks. Think stats collectors, fun games, and
-                  nerdy little utilities that probably started as a “what if I just…”
+                  nerdy little utilities that probably started as a “what if I just…”. I also create stuff if someone brings an interesting idea to me!
                 </p>
                 <ul className="space-y-2 text-sm text-zinc-300">
                   <li className="flex items-start gap-2">
@@ -118,6 +118,10 @@ export default function Home() {
                   <li className="flex items-start gap-2">
                     <span className="mt-1 h-1.5 w-1.5 rounded-full bg-[#FF9FC6]" />
                     Focus on clarity and performance
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-[#FF9FC6]" />
+                    Goofy stuff and commissions
                   </li>
                 </ul>
               </div>
@@ -160,9 +164,9 @@ export default function Home() {
                 </span>
                 </h2>
                 <p className="text-zinc-300">
-                  I create mods that lean hard into aesthetics: accessories, outfits, animations,
-                  and small bits of visual flair. Think soft pinks, bold blacks, and clean shapes
-                  that still feel playful.
+                  I create mods mainly for myself and friends, sometimes releasing small things :p
+                   My range goes from simple accessories to tattoos, clothing mods and just recently animations!
+                  I'm on a mission to make me and my friends look the best we can
                 </p>
                 <ul className="space-y-2 text-sm text-zinc-300">
                   <li className="flex items-start gap-2">
@@ -172,6 +176,10 @@ export default function Home() {
                   <li className="flex items-start gap-2">
                     <span className="mt-1 h-1.5 w-1.5 rounded-full bg-[#FF9FC6]" />
                     Custom animations and personality-driven details
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-[#FF9FC6]" />
+                    Personalized tattoos and body modifications
                   </li>
                 </ul>
               </div>
@@ -183,23 +191,23 @@ export default function Home() {
               <div className="grid gap-10 lg:grid-cols-[1.3fr_minmax(0,1fr)] lg:items-center">
                 <div className="space-y-4">
                   <h2 className="text-3xl font-semibold md:text-4xl">
-                    Gambling hobby
+                    Espi Gamba!
                     <span className="block text-base font-normal text-[#FF9FC6]">
-                    Numbers, odds, and way too many stats
+                    Numbers, odds, lost gil and way too many stats
                   </span>
                   </h2>
                   <p className="text-zinc-300">
                     I like games of chance almost as much as I like tracking them. I log my
                     gambling sessions, collect stats, and turn them into something I can poke
-                    at later: trends, streaks, and “was that luck or just variance?”
+                    at later: trends, streaks, and leaderboards to make it exciting for players too ^^
                   </p>
                   <p className="text-zinc-400 text-sm">
-                    The data itself lives elsewhere, but this is home base if you want to peek
-                    into the numbers or talk about probability, risk, or just cool wins.
+                    The data itself lives elsewhere, but this is the home base if you want to peek
+                    into the numbers.
                   </p>
                   <div className="flex flex-wrap gap-4 pt-2">
                     <a
-                        href="https://example.com/stats"
+                        href="#"
                         className="rounded-full px-6 py-2 text-sm font-medium bg-[#FF9FC6] text-black shadow-[0_0_20px_rgba(255,159,198,0.8)] transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(255,159,198,1)]"
                     >
                       View my stats
@@ -223,11 +231,10 @@ export default function Home() {
                     </div>
                     <div className="rounded-2xl bg-black/50 p-4 transition-transform duration-200 hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(255,159,198,0.4)]">
                       <p className="text-xs text-zinc-400">Favorite games</p>
-                      <p className="text-base text-white">Roulette, cards, chaos</p>
+                      <p className="text-base text-white">Blackjack, Roulette</p>
                     </div>
                     <div className="col-span-2 rounded-2xl bg-black/60 p-4 text-xs text-zinc-300">
-                      This block can later pull in live numbers or charts from your external
-                      stats page.
+                      I will add some small stats here when I get my stats API up q.q
                     </div>
                   </div>
                 </div>
@@ -268,7 +275,7 @@ export default function Home() {
                       Instagram
                     </a>
                     <a
-                        href="https://example.com/stats"
+                        href="#"
                         className="rounded-full border border-zinc-700 px-5 py-2 text-center transition-all hover:border-[#FF9FC6] hover:bg-[#FF9FC6]/10"
                     >
                       Gambling stats page
