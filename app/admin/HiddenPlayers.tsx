@@ -114,7 +114,7 @@ export function HiddenPlayers() {
 
         <div className="mt-3 overflow-hidden rounded-2xl border border-zinc-200 bg-white">
           <div className="grid grid-cols-[1fr_auto] gap-0 border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-xs font-medium text-zinc-700">
-            <div>playerTag</div>
+            <div>Player Name</div>
             <div className="text-right">&nbsp;</div>
           </div>
 
