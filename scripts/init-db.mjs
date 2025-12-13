@@ -1,0 +1,63 @@
+import { MongoClient } from "mongodb";
+
+const uri = process.env.MONGODB_URI;
+if (!uri) {
+  console.error("Missing MONGODB_URI");
+  process.exit(1);
+}
+
+const dbName = process.env.MONGODB_DB ?? "app";
+
+const client = new MongoClient(uri, {
+  appName: process.env.VERCEL_PROJECT_PRODUCTION_URL ?? "nextjs-app",
+});
+
+const run = async () => {
+  await client.connect();
+  const db = client.db(dbName);
+
+  const users = db.collection("users");
+  await users.createIndex({ email: 1 }, { unique: true });
+  await users.createIndex({ createdAt: 1 });
+
+  const players = db.collection("players");
+  await players.createIndex({ playerTag: 1 }, { unique: true });
+  await players.createIndex({ createdAt: -1 });
+
+  const aliases = db.collection("aliases");
+  await aliases.createIndex({ aliasTag: 1 }, { unique: true });
+  await aliases.createIndex({ primaryTag: 1, aliasTag: 1 }, { unique: true });
+  await aliases.createIndex({ primaryTag: 1 });
+  await aliases.createIndex({ createdAt: -1 });
+
+  const games = db.collection("games");
+  await games.createIndex({ createdAt: -1 });
+  await games.createIndex({ sourceDateTime: 1 }, { unique: true, sparse: true });
+  await games.createIndex({ uploaderId: 1, createdAt: -1 });
+  await games.createIndex({ hostId: 1, createdAt: -1 });
+  await games.createIndex({ "players.playerId": 1, createdAt: -1 });
+  await games.createIndex({ "players.comboKey": 1, createdAt: -1 });
+
+  const statsPlayer = db.collection("stats_player");
+  await statsPlayer.createIndex({ updatedAt: -1 });
+  await statsPlayer.createIndex({ games: -1 });
+
+  const statsHost = db.collection("stats_host");
+  await statsHost.createIndex({ updatedAt: -1 });
+  await statsHost.createIndex({ gamesHosted: -1 });
+
+  const statsCombo = db.collection("stats_combo");
+  await statsCombo.createIndex({ updatedAt: -1 });
+  await statsCombo.createIndex({ seen: -1 });
+
+  console.log(`OK: indexes ready in db "${dbName}" (users, games, players, aliases, stats_*)`);
+};
+
+run()
+  .catch((e) => {
+    console.error(e);
+    process.exitCode = 1;
+  })
+  .finally(async () => {
+    await client.close();
+  });

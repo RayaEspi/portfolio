@@ -6,10 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:init": "node --env-file=.env.local scripts/init-db.mjs"
   },
   "dependencies": {
     "@vercel/functions": "^3.3.4",
+    "bcryptjs": "^2.4.3",
+    "jose": "^6.1.3",
     "mongodb": "^7.0.0",
     "next": "^16.0.7",
     "react": "19.2.0",
