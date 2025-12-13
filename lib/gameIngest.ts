@@ -1,5 +1,20 @@
 import { ObjectId } from "mongodb";
 import type { Db } from "mongodb";
+import type { AnyBulkWriteOperation } from "mongodb";
+
+type StatsHostDoc = {
+  _id: string;
+  betTotal: number;
+  createdAt: Date;
+  gamesHosted: number;
+  net: number;
+  payoutTotal: number;
+  playerLosses: number;
+  playerOtherResults: number;
+  playerPushes: number;
+  playerWins: number;
+  updatedAt: Date;
+};
 
 export type RawRoundEntry = {
   PlayerName: string;
@@ -27,6 +42,15 @@ export type ParsedRoundEntry = {
   cards: number[];
   comboKey: string;
   integrity: number;
+};
+
+type PlayerDoc = {
+  _id: string;
+  playerTag: string;
+  name: string;
+  world: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 function slugify(input: string) {
@@ -170,35 +194,35 @@ export async function ingestRound(opts: {
   }
 
   // Upsert into players collection (identity + display tag).
-  const playersCol = opts.db.collection("players");
-  const playerOps = players.map((p) => ({
-    updateOne: {
-      filter: { _id: p.playerId },
-      update: {
-        $setOnInsert: {
-          _id: p.playerId,
+  const playersCol = opts.db.collection<PlayerDoc>("players");
+  const now = new Date();
+
+  const playerOps: AnyBulkWriteOperation<PlayerDoc>[] = players.map((p) => {
+    const id = `${p.world}:${p.playerTag}`; // or just p.playerTag if guaranteed unique
+
+    return {
+      updateOne: {
+        filter: { _id: id },
+        update: {
+          $setOnInsert: { _id: id, createdAt: now },
+          $set: {
+            playerTag: p.playerTag,
+            name: p.name,
+            world: p.world,
+            updatedAt: now,
+          },
         },
-        $set: {
-          playerTag: p.playerTag,
-          name: p.name,
-          world: p.world,
-          updatedAt: createdAt,
-        },
-        // Ensure createdAt is the first round the player ever appeared in.
-        $min: {
-          createdAt,
-        },
+        upsert: true,
       },
-      upsert: true,
-    },
-  }));
+    };
+  });
 
   if (playerOps.length) await playersCol.bulkWrite(playerOps, { ordered: false });
 
   // Stats updates
   const statsPlayer = opts.db.collection("stats_player");
   const statsCombo = opts.db.collection("stats_combo");
-  const statsHost = opts.db.collection("stats_host");
+  const statsHost = opts.db.collection<StatsHostDoc>("stats_host");
 
   const nonDealer = players.filter((p) => !p.dealer);
   const hostAggregates = nonDealer.reduce(

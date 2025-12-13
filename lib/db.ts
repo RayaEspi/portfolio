@@ -1,8 +1,8 @@
-import type { Db } from "mongodb";
+import type { Db, ObjectId } from "mongodb";
 import clientPromise from "./mongodb";
 
 export type UserDoc = {
-  _id: unknown;
+  _id?: ObjectId;
   email: string;
   passwordHash: string;
   name?: string;

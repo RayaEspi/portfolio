@@ -1,4 +1,5 @@
 import type { Db } from "mongodb";
+import type { AnyBulkWriteOperation } from "mongodb";
 import { decodeRoundPayload, parseRoundEntries } from "@/lib/gameIngest";
 
 type ReportRow = {
@@ -6,6 +7,10 @@ type ReportRow = {
   createdAt: Date;
   detailsBase64: string;
 };
+
+type StatsPlayerDoc = { _id: string } & Record<string, any>;
+type StatsComboDoc = { _id: string } & Record<string, any>;
+type StatsHostDoc = { _id: string } & Record<string, any>;
 
 function parseReportDateTime(input: string): Date | null {
   const s = (input ?? "").trim();
@@ -97,9 +102,9 @@ export async function ingestReportCsv(opts: { db: Db; uploaderId: string; csvTex
 
   const gamesCol = opts.db.collection("games");
   const playersCol = opts.db.collection("players");
-  const statsPlayer = opts.db.collection("stats_player");
-  const statsCombo = opts.db.collection("stats_combo");
-  const statsHost = opts.db.collection("stats_host");
+  const statsPlayer = opts.db.collection<StatsPlayerDoc>("stats_player");
+  const statsCombo = opts.db.collection<StatsComboDoc>("stats_combo");
+  const statsHost = opts.db.collection<StatsHostDoc>("stats_host");
 
   const gameDocs: any[] = [];
   const validRowIndexes: number[] = [];

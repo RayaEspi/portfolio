@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import { ObjectId } from "mongodb";
 import { AUTH_COOKIE_NAME, verifyAuthToken } from "@/lib/auth";
@@ -17,12 +17,12 @@ async function requireAdmin() {
   }
 }
 
-export async function DELETE(_req: Request, ctx: { params: { id: string } }) {
+export async function DELETE(_req: NextRequest, ctx: RouteContext<"/api/admin/aliases/[id]">) {
   await ensureGameCollections();
   const gate = await requireAdmin();
   if (!gate.ok) return gate.res;
 
-  const { id } = ctx.params;
+  const { id } = await ctx.params;
   if (!ObjectId.isValid(id)) {
     return NextResponse.json({ error: "Invalid id" }, { status: 400 });
   }

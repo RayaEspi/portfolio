@@ -64,7 +64,7 @@ export async function POST(req: Request) {
       role: "admin",
       createdAt: now,
       updatedAt: now,
-    } as Omit<UserDoc, "_id"> as any);
+    });
 
     const id = insert.insertedId.toHexString();
     const token = await signAuthToken({ id, email, role: "admin" });

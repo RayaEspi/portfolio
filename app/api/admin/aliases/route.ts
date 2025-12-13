@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import type { ObjectId } from "mongodb";
 import { AUTH_COOKIE_NAME, verifyAuthToken } from "@/lib/auth";
 import { ensureGameCollections, getDb } from "@/lib/db";
 
 type AliasDoc = {
-  _id: unknown;
+  _id?: ObjectId;
   primaryTag: string;
   aliasTag: string;
   createdAt: Date;
@@ -41,7 +42,7 @@ export async function GET() {
   return NextResponse.json({
     ok: true,
     aliases: rows.map((a) => ({
-      id: (a as any)._id?.toString?.() ?? String((a as any)._id),
+      id: a._id ? a._id.toHexString() : "",
       primaryTag: a.primaryTag,
       aliasTag: a.aliasTag,
       createdAt: a.createdAt,

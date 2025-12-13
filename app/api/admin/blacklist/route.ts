@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import type { ObjectId } from "mongodb";
 import { AUTH_COOKIE_NAME, verifyAuthToken } from "@/lib/auth";
 import { ensureGameCollections, getDb } from "@/lib/db";
 
 type BlacklistDoc = {
-  _id: unknown;
+  _id?: ObjectId;
   playerTag: string;
   createdAt: Date;
   createdBy: string;
@@ -40,7 +41,7 @@ export async function GET() {
   return NextResponse.json({
     ok: true,
     blacklist: rows.map((b) => ({
-      id: (b as any)._id?.toString?.() ?? String((b as any)._id),
+      id: b._id ? b._id.toHexString() : "",
       playerTag: b.playerTag,
       createdAt: b.createdAt,
       createdBy: b.createdBy,
