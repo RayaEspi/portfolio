@@ -5,7 +5,7 @@ import { AUTH_COOKIE_NAME, authCookieOptions, signAuthToken } from "./lib/auth";
 
 const REFRESH_WINDOW_SECONDS = 60 * 60 * 24;
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   if (pathname.startsWith("/admin/login") || pathname.startsWith("/admin/register")) {
