@@ -54,6 +54,7 @@ export async function ensureGameCollections() {
       await ensureCollection(db, "players");
       await ensureCollection(db, "games");
       await ensureCollection(db, "aliases");
+      await ensureCollection(db, "blacklist");
       await ensureCollection(db, "stats_player");
       await ensureCollection(db, "stats_host");
       await ensureCollection(db, "stats_combo");
@@ -67,6 +68,10 @@ export async function ensureGameCollections() {
       await aliases.createIndex({ primaryTag: 1, aliasTag: 1 }, { unique: true });
       await aliases.createIndex({ primaryTag: 1 });
       await aliases.createIndex({ createdAt: -1 });
+
+      const blacklist = db.collection("blacklist");
+      await blacklist.createIndex({ playerTag: 1 }, { unique: true });
+      await blacklist.createIndex({ createdAt: -1 });
 
       const games = db.collection("games");
       await games.createIndex({ createdAt: -1 });

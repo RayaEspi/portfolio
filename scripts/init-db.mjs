@@ -29,6 +29,10 @@ const run = async () => {
   await aliases.createIndex({ primaryTag: 1, aliasTag: 1 }, { unique: true });
   await aliases.createIndex({ primaryTag: 1 });
   await aliases.createIndex({ createdAt: -1 });
+  const blacklist = db.collection("blacklist");
+  await blacklist.createIndex({ playerTag: 1 }, { unique: true });
+  await blacklist.createIndex({ createdAt: -1 });
+
 
   const games = db.collection("games");
   await games.createIndex({ createdAt: -1 });
@@ -50,7 +54,7 @@ const run = async () => {
   await statsCombo.createIndex({ updatedAt: -1 });
   await statsCombo.createIndex({ seen: -1 });
 
-  console.log(`OK: indexes ready in db "${dbName}" (users, games, players, aliases, stats_*)`);
+  console.log(`OK: indexes ready in db "${dbName}" (users, games, players, aliases, blacklist, stats_*)`);
 };
 
 run()

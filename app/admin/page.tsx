@@ -7,6 +7,7 @@ import { LogoutButton } from "./LogoutButton";
 import { redirect } from "next/navigation";
 import { GameImport } from "./GameImport";
 import { Aliases } from "./Aliases";
+import { HiddenPlayers } from "./HiddenPlayers";
 
 export default async function AdminPage() {
   await ensureAuthCollections();
@@ -37,6 +38,7 @@ export default async function AdminPage() {
 
         <GameImport />
         <Aliases />
+        <HiddenPlayers />
       </div>
   );
 }
