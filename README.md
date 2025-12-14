@@ -40,4 +40,17 @@ It’s a small, focused Next.js site that basically says:
 ---
 
 Feel free to use this as a template for your own website design if you so wish! Just give me credit somewhere on the site. 💖
-Free help will be given to other Lesbian people wanting to adapt this design for their own use. 🌈
+Free help will be given to other Lesbian women wanting to adapt this design for their own use. 🌈
+
+
+---
+
+## 🛠️ Development
+
+Want to poke around the code or spin it up locally? Here’s the quick start:
+
+1. Install dependencies with `npm install` (Node 18+ recommended, tested on Node 24).
+2. Fire up the dev server with `npm run dev` and visit `http://localhost:3000`.
+3. Run `npm run lint` before shipping to keep the vibes tidy.
+
+If you’re playing with the database-powered bits, drop your secrets in `.env.local` and seed with `npm run db:init`. Have fun and commit res
