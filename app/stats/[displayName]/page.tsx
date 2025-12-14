@@ -264,7 +264,7 @@ async function loadStats(displayName: string) {
       prev.games += Number(r.games) || 0;
       prev.betTotal += Number(r.betTotal) || 0;
       prev.payoutTotal += Number(r.payoutTotal) || 0;
-      prev.net += Number(r.net) || 0;
+      prev.net = prev.payoutTotal - prev.betTotal;
     }
   }
 
@@ -321,11 +321,18 @@ async function loadStats(displayName: string) {
     .sort((a, b) => b.games - a.games || b.betTotal - a.betTotal)
     .slice(0, 10);
 
+  const totalNet = mergedPlayers.reduce(
+      (sum, p) => sum + ((Number(p.payoutTotal) || 0) - (Number(p.betTotal) || 0)),
+      0,
+  );
+
+
   return {
     ok: true as const,
     displayName: user.name ?? displayName,
     newestHostTag,
     roundsHosted,
+    totalNet,
     dealerNet,
     totalBet,
     totalPayout,
