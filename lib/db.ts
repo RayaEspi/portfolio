@@ -11,7 +11,7 @@ export type UserDoc = {
   updatedAt: Date;
 };
 
-const dbName = () => process.env.MONGODB_DB ?? "app";
+const dbName = () => process.env.MONGODB_DB ?? "gamba";
 
 let initPromise: Promise<void> | null = null;
 let gameInitPromise: Promise<void> | null = null;
