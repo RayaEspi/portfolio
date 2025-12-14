@@ -2,7 +2,7 @@ import { MongoClient, type MongoClientOptions } from "mongodb";
 import { attachDatabasePool } from "@vercel/functions";
 
 const uri = process.env.MONGODB_URI;
-if (!uri) throw new Error("Missing MONGODB_URI in .env.local");
+if (!uri) throw new Error("Missing MONGODB_URI in ..env.local");
 
 const options: MongoClientOptions = {
     appName: process.env.VERCEL_PROJECT_PRODUCTION_URL ?? "nextjs-app",

@@ -2,19 +2,7 @@ import { ObjectId } from "mongodb";
 import type { Db } from "mongodb";
 import type { AnyBulkWriteOperation } from "mongodb";
 
-type StatsHostDoc = {
-  _id: string;
-  betTotal: number;
-  createdAt: Date;
-  gamesHosted: number;
-  net: number;
-  payoutTotal: number;
-  playerLosses: number;
-  playerOtherResults: number;
-  playerPushes: number;
-  playerWins: number;
-  updatedAt: Date;
-};
+type StatsHostDoc = Record<string, any>;
 
 export type RawRoundEntry = {
   PlayerName: string;
@@ -239,19 +227,21 @@ export async function ingestRound(opts: {
     { playerWins: 0, playerLosses: 0, playerPushes: 0, playerOther: 0, betTotal: 0, payoutTotal: 0 }
   );
 
-  const statsOps: any[] = [];
+  const playerStatOps: any[] = [];
+  const comboStatOps: any[] = [];
 
   for (const p of nonDealer) {
     const o = outcomeBuckets(p.result);
     const net = p.payout - p.bet;
-    statsOps.push({
+    playerStatOps.push({
       updateOne: {
-        filter: { _id: p.playerId },
+        filter: { uploaderId, playerId: p.playerId },
         update: {
           // Avoid ConflictingUpdateOperators (code 40): the same path cannot be targeted by
           // both $setOnInsert and $set in a single update.
           $setOnInsert: {
-            _id: p.playerId,
+            uploaderId,
+            playerId: p.playerId,
             createdAt,
           },
           $set: {
@@ -278,12 +268,13 @@ export async function ingestRound(opts: {
     });
 
     if (p.comboKey) {
-      statsOps.push({
+      comboStatOps.push({
         updateOne: {
-          filter: { _id: p.comboKey },
+          filter: { uploaderId, comboKey: p.comboKey },
           update: {
             $setOnInsert: {
-              _id: p.comboKey,
+              uploaderId,
+              comboKey: p.comboKey,
               createdAt,
             },
             $set: {
@@ -306,23 +297,23 @@ export async function ingestRound(opts: {
     }
   }
 
-  if (statsOps.length) {
-    // We mix two collections, so split to keep the bulkWrite target consistent.
-    const playerOpsOnly = statsOps.filter((op) => op.updateOne?.filter?._id?.includes(":") ?? false);
-    const comboOpsOnly = statsOps.filter((op) => !(op.updateOne?.filter?._id?.includes(":") ?? false));
-
-    if (playerOpsOnly.length) await statsPlayer.bulkWrite(playerOpsOnly, { ordered: false });
-    if (comboOpsOnly.length) await statsCombo.bulkWrite(comboOpsOnly, { ordered: false });
-  }
+  if (playerStatOps.length) await statsPlayer.bulkWrite(playerStatOps, { ordered: false });
+  if (comboStatOps.length) await statsCombo.bulkWrite(comboStatOps, { ordered: false });
 
   await statsHost.updateOne(
-    { _id: hostId },
+    { uploaderId, hostId },
     {
       $setOnInsert: {
-        _id: hostId,
+        uploaderId,
+        hostId,
+        ownedBy: uploaderId,
         createdAt,
       },
       $set: {
+        ownedBy: uploaderId,
+        playerTag: dealerEntry.playerTag,
+        name: dealerEntry.name,
+        world: dealerEntry.world,
         updatedAt: createdAt,
       },
       $inc: {
