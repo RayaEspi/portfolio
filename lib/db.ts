@@ -83,16 +83,40 @@ export async function ensureGameCollections() {
       await games.createIndex({ "players.comboKey": 1, createdAt: -1 });
 
       const statsPlayer = db.collection("stats_player");
-      await statsPlayer.createIndex({ updatedAt: -1 });
-      await statsPlayer.createIndex({ games: -1 });
+      // Stats are user-scoped: the same playerId/comboKey/hostId can exist under different uploaders.
+      // Use partial unique compound indexes so legacy docs (without uploaderId) don't block index creation.
+      await statsPlayer.createIndex(
+        { uploaderId: 1, playerId: 1 },
+        {
+          unique: true,
+          partialFilterExpression: { uploaderId: { $exists: true }, playerId: { $exists: true } },
+        }
+      );
+      await statsPlayer.createIndex({ uploaderId: 1, updatedAt: -1 });
+      await statsPlayer.createIndex({ uploaderId: 1, games: -1 });
 
       const statsHost = db.collection("stats_host");
-      await statsHost.createIndex({ updatedAt: -1 });
-      await statsHost.createIndex({ gamesHosted: -1 });
+      await statsHost.createIndex(
+        { uploaderId: 1, hostId: 1 },
+        {
+          unique: true,
+          partialFilterExpression: { uploaderId: { $exists: true }, hostId: { $exists: true } },
+        }
+      );
+      await statsHost.createIndex({ uploaderId: 1, updatedAt: -1 });
+      await statsHost.createIndex({ uploaderId: 1, gamesHosted: -1 });
+      await statsHost.createIndex({ ownedBy: 1, updatedAt: -1 });
 
       const statsCombo = db.collection("stats_combo");
-      await statsCombo.createIndex({ updatedAt: -1 });
-      await statsCombo.createIndex({ seen: -1 });
+      await statsCombo.createIndex(
+        { uploaderId: 1, comboKey: 1 },
+        {
+          unique: true,
+          partialFilterExpression: { uploaderId: { $exists: true }, comboKey: { $exists: true } },
+        }
+      );
+      await statsCombo.createIndex({ uploaderId: 1, updatedAt: -1 });
+      await statsCombo.createIndex({ uploaderId: 1, seen: -1 });
     })();
   }
 

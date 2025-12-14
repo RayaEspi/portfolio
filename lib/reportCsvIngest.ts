@@ -6,11 +6,14 @@ type ReportRow = {
   sourceDateTime: string;
   createdAt: Date;
   detailsBase64: string;
+  collected?: number;
+  paidOut?: number;
+  profit?: number;
 };
 
-type StatsPlayerDoc = { _id: string } & Record<string, any>;
-type StatsComboDoc = { _id: string } & Record<string, any>;
-type StatsHostDoc = { _id: string } & Record<string, any>;
+type StatsPlayerDoc = Record<string, any>;
+type StatsComboDoc = Record<string, any>;
+type StatsHostDoc = Record<string, any>;
 
 function parseReportDateTime(input: string): Date | null {
   const s = (input ?? "").trim();
@@ -30,6 +33,19 @@ function parseReportDateTime(input: string): Date | null {
 function splitCsvLine(line: string, delimiter: string) {
   // This report format is simple (no quoted delimiters in fields). A minimal split is reliable here.
   return line.split(delimiter).map((v) => v.trim());
+}
+
+function parseAmount(input: string): number | undefined {
+  const raw = (input ?? "").trim();
+  if (!raw) return undefined;
+  // CSV uses spaces/NBSP as thousand separators (e.g. "9 700 000").
+  const cleaned = raw
+    .replace(/[\s\u00A0\u202F]/g, "")
+    .replace(/,/g, "")
+    .replace(/'/g, "");
+  const n = Number(cleaned);
+  if (!Number.isFinite(n)) return undefined;
+  return Math.trunc(n);
 }
 
 function parseReportCsv(text: string): { rows: ReportRow[]; invalid: number } {
@@ -52,6 +68,12 @@ function parseReportCsv(text: string): { rows: ReportRow[]; invalid: number } {
   const headers = splitCsvLine(headerLine, delimiter).map((h) => h.toLowerCase());
   const idxDate = headers.findIndex((h) => h === "date and time" || (h.includes("date") && h.includes("time")));
   const idxDetails = headers.findIndex((h) => h === "details" || h.includes("detail"));
+
+  // Optional totals columns (present in the sample CSV):
+  const idxCollected = headers.findIndex((h) => h === "collected" || h.includes("collect"));
+  const idxPaidOut = headers.findIndex((h) => h === "paid out" || h.includes("paid out") || (h.includes("paid") && h.includes("out")));
+  const idxProfit = headers.findIndex((h) => h === "profit" || h.includes("profit"));
+
   if (idxDate === -1 || idxDetails === -1) {
     return { rows: [], invalid: nonEmpty.length - (cursor + 1) };
   }
@@ -71,7 +93,10 @@ function parseReportCsv(text: string): { rows: ReportRow[]; invalid: number } {
       invalid++;
       continue;
     }
-    rows.push({ sourceDateTime, createdAt, detailsBase64 });
+    const collected = idxCollected !== -1 ? parseAmount(parts[idxCollected] ?? "") : undefined;
+    const paidOut = idxPaidOut !== -1 ? parseAmount(parts[idxPaidOut] ?? "") : undefined;
+    const profit = idxProfit !== -1 ? parseAmount(parts[idxProfit] ?? "") : undefined;
+    rows.push({ sourceDateTime, createdAt, detailsBase64, collected, paidOut, profit });
   }
 
   return { rows, invalid };
@@ -118,6 +143,22 @@ export async function ingestReportCsv(opts: { db: Db; uploaderId: string; csvTex
       const dealerEntry = players.find((p) => p.dealer);
       if (!dealerEntry) continue;
 
+      // Game-level totals (prefer CSV columns when available; fall back to summing per-player values).
+      const nonDealer = players.filter((p) => !p.dealer);
+      const payloadTotals = nonDealer.reduce(
+        (acc, p) => {
+          acc.collected += Number(p.bet) || 0;
+          acc.paidOut += Number(p.payout) || 0;
+          return acc;
+        },
+        { collected: 0, paidOut: 0 }
+      );
+
+      const collected = typeof r.collected === "number" ? r.collected : payloadTotals.collected;
+      const paidOut = typeof r.paidOut === "number" ? r.paidOut : payloadTotals.paidOut;
+      // Profit in the CSV is "Collected - Paid out" (house profit). Keep the same convention.
+      const profit = typeof r.profit === "number" ? r.profit : collected - paidOut;
+
       gameDocs.push({
         createdAt: r.createdAt,
         sourceDateTime: r.sourceDateTime,
@@ -125,6 +166,9 @@ export async function ingestReportCsv(opts: { db: Db; uploaderId: string; csvTex
         hostId: dealerEntry.playerId,
         gameType: "cards",
         integrity: { version: 1 },
+        collected,
+        paidOut,
+        profit,
         players,
         payloadBase64: decoded.payloadBase64 ?? r.detailsBase64,
       });
@@ -227,13 +271,37 @@ export async function ingestReportCsv(opts: { db: Db; uploaderId: string; csvTex
     const createdAt = nowByDoc(doc);
     const hostId = doc.hostId;
     if (!hostAgg.has(hostId)) {
-      hostAgg.set(hostId, { gamesHosted: 0, playerWins: 0, playerLosses: 0, playerPushes: 0, playerOtherResults: 0, betTotal: 0, payoutTotal: 0, createdAt, updatedAt: createdAt });
+      hostAgg.set(hostId, {
+        gamesHosted: 0,
+        playerWins: 0,
+        playerLosses: 0,
+        playerPushes: 0,
+        playerOtherResults: 0,
+        betTotal: 0,
+        payoutTotal: 0,
+        net: 0,
+        // Dealer identity (best-effort; updated as we see more docs)
+        playerTag: "",
+        name: "",
+        world: "",
+        createdAt,
+        updatedAt: createdAt,
+      });
     }
     const ha = hostAgg.get(hostId);
     ha.gamesHosted += 1;
-    ha.updatedAt = createdAt;
+    if (createdAt < ha.createdAt) ha.createdAt = createdAt;
+    if (createdAt > ha.updatedAt) ha.updatedAt = createdAt;
 
     const players = Array.isArray(doc.players) ? doc.players : [];
+
+    const dealer = players.find((p: any) => p && p.dealer);
+    if (dealer) {
+      if (typeof dealer.playerTag === "string") ha.playerTag = dealer.playerTag;
+      if (typeof dealer.name === "string") ha.name = dealer.name;
+      if (typeof dealer.world === "string") ha.world = dealer.world;
+    }
+
     for (const p of players) {
       if (p.dealer) continue;
       const o = outcomeBuckets(Number(p.result) || 0);
@@ -304,11 +372,11 @@ export async function ingestReportCsv(opts: { db: Db; uploaderId: string; csvTex
 
   const playerStatOps = Array.from(playerAgg.entries()).map(([playerId, a]) => ({
     updateOne: {
-      filter: { _id: playerId },
+      filter: { uploaderId: opts.uploaderId, playerId },
       update: {
         // Avoid ConflictingUpdateOperators (code 40): the same path cannot be targeted by
         // both $setOnInsert and $set in a single update.
-        $setOnInsert: { _id: playerId, createdAt: a.createdAt },
+        $setOnInsert: { uploaderId: opts.uploaderId, playerId, createdAt: a.createdAt },
         $set: { playerTag: a.playerTag, name: a.name, world: a.world, updatedAt: a.updatedAt },
         $inc: {
           games: a.games,
@@ -329,9 +397,9 @@ export async function ingestReportCsv(opts: { db: Db; uploaderId: string; csvTex
 
   const comboOps = Array.from(comboAgg.entries()).map(([comboKey, a]) => ({
     updateOne: {
-      filter: { _id: comboKey },
+      filter: { uploaderId: opts.uploaderId, comboKey },
       update: {
-        $setOnInsert: { _id: comboKey, createdAt: a.createdAt },
+        $setOnInsert: { uploaderId: opts.uploaderId, comboKey, createdAt: a.createdAt },
         $set: { updatedAt: a.updatedAt },
         $inc: {
           seen: a.seen,
@@ -350,10 +418,10 @@ export async function ingestReportCsv(opts: { db: Db; uploaderId: string; csvTex
 
   const hostOps = Array.from(hostAgg.entries()).map(([hostId, a]) => ({
     updateOne: {
-      filter: { _id: hostId },
+      filter: { uploaderId: opts.uploaderId, hostId },
       update: {
-        $setOnInsert: { _id: hostId, createdAt: a.createdAt },
-        $set: { updatedAt: a.updatedAt },
+        $setOnInsert: { uploaderId: opts.uploaderId, hostId, ownedBy: opts.uploaderId, createdAt: a.createdAt },
+        $set: { ownedBy: opts.uploaderId, playerTag: a.playerTag, name: a.name, world: a.world, updatedAt: a.updatedAt },
         $inc: {
           gamesHosted: a.gamesHosted,
           playerWins: a.playerWins,

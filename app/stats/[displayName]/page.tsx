@@ -64,6 +64,7 @@ async function loadStats(displayName: string) {
   const games = db.collection("games");
   const aliases = db.collection("aliases");
   const hosts = db.collection("stats_host");
+  const blacklist = db.collection("blacklist");
 
   let dn = (displayName ?? "").trim();
   try {
@@ -267,23 +268,55 @@ async function loadStats(displayName: string) {
     }
   }
 
+  const row = await games
+      .aggregate<{
+        totalProfit: number;
+        totalBet: number;
+        totalPayout: number;
+      }>([
+        { $match: { uploaderId } },
+        {
+          $group: {
+            _id: null,
+            totalProfit: { $sum: { $ifNull: ["$profit", 0] } },
+            totalBet: { $sum: { $ifNull: ["$collected", 0] } },
+            totalPayout: { $sum: { $ifNull: ["$paidOut", 0] } },
+          },
+        },
+        { $project: { _id: 0, totalProfit: 1, totalBet: 1, totalPayout: 1 } },
+      ])
+      .next();
+
+  const totals = row ?? { totalProfit: 0, totalBet: 0, totalPayout: 0 };
+  console.log("[stats] totals:", totals);
+
   const mergedPlayers = Array.from(byCanonical.values());
-  const totalBet = mergedPlayers.reduce((a, p) => a + (p.betTotal || 0), 0);
-  const totalPayout = mergedPlayers.reduce((a, p) => a + (p.payoutTotal || 0), 0);
+  const totalBet = totals.totalBet;
+  const totalPayout = totals.totalPayout;
   const playerNet = totalPayout - totalBet;
-  const dealerNet = -playerNet;
+  const dealerNet = totals.totalProfit;
+
+  type BlacklistDoc = { playerTag: string; createdBy: string };
+
+  const blacklistDocs = await blacklist
+      .find<BlacklistDoc>({ createdBy: uploaderId })
+      .project({ playerTag: 1 })
+      .toArray();
+
+  const blacklistedTagsForUploader = new Set(blacklistDocs.map((b) => norm(b.playerTag)));
 
   const topWinners = mergedPlayers
-    .filter((p) => p.net > 0)
-    .sort((a, b) => b.net - a.net)
-    .slice(0, 10);
+      .filter((p) => p.net > 0 && !blacklistedTagsForUploader.has(norm(p.playerTag ?? "")))
+      .sort((a, b) => b.net - a.net)
+      .slice(0, 10);
 
   const topLosers = mergedPlayers
-    .filter((p) => p.net < 0)
+      .filter((p) => p.net < 0 && !blacklistedTagsForUploader.has(norm(p.playerTag ?? "")))
     .sort((a, b) => a.net - b.net)
     .slice(0, 10);
 
   const topActive = mergedPlayers
+    .filter(p => !blacklistedTagsForUploader.has(norm(p.playerTag ?? "")))
     .slice()
     .sort((a, b) => b.games - a.games || b.betTotal - a.betTotal)
     .slice(0, 10);
