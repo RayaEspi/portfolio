@@ -14,18 +14,18 @@ type StatsHostDoc = { _id: string } & Record<string, any>;
 
 function parseReportDateTime(input: string): Date | null {
   const s = (input ?? "").trim();
-  // Example: 26/04/2025 22.09.39 +03:00
   const m = s.match(
-    // Some rows use a single-digit hour (e.g. "27/04/2025 0.06.56 +03:00"), so accept 1–2 digits.
-    /^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{1,2})\.(\d{2})\.(\d{2})(?:\s+([+-]\d{2}:\d{2}|Z))?$/
+      /^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{1,2})[.:](\d{2})[.:](\d{2})(?:\s+([+-]\d{2}:\d{2}|Z))?$/
   );
   if (!m) return null;
+
   const [, dd, mm, yyyy, HHraw, MM, SS, tz] = m;
   const HH = HHraw.padStart(2, "0");
   const iso = `${yyyy}-${mm}-${dd}T${HH}:${MM}:${SS}${tz ? tz : ""}`;
   const d = new Date(iso);
   return Number.isNaN(d.getTime()) ? null : d;
 }
+
 
 function splitCsvLine(line: string, delimiter: string) {
   // This report format is simple (no quoted delimiters in fields). A minimal split is reliable here.
