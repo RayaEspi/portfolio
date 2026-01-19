@@ -18,7 +18,7 @@ export function AdminSectionsClient({
 
     const items = useMemo(
         () => [
-            { id: null as const, label: "Game Import" },
+            { id: null, label: "Game Import" },
             { id: "aliases" as const, label: "Aliases" },
             { id: "hidden-players" as const, label: "Hidden Players" },
         ],
