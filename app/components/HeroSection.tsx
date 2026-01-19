@@ -28,6 +28,9 @@ export function HeroSection() {
             <a href="#gambling" className="hover:text-[#FF9FC6] transition-colors">
               Gambling
             </a>
+            <a href="/velvet" className="hover:text-[#FF9FC6] transition-colors">
+              Velvet
+            </a>
             <a href="#contact" className="hover:text-[#FF9FC6] transition-colors">
               Contact
             </a>
@@ -72,6 +75,13 @@ export function HeroSection() {
               >
                 <span className="text-shadow-lg/90 h-1.5 w-1.5 rounded-full bg-[#FF9FC6] group-hover:scale-125 transition-transform" />
                 Instagram
+              </a>
+              <a
+                href="/velvet"
+                className="group flex items-center gap-2 rounded-full border border-zinc-700 px-4 py-1.5 transition-all hover:border-[#FF9FC6] hover:bg-[#FF9FC6]/5"
+              >
+                <span className="text-shadow-lg/90 h-1.5 w-1.5 rounded-full bg-[#FF9FC6] group-hover:scale-125 transition-transform" />
+                Velvet Auction
               </a>
               <a
                 href="#gambling"
