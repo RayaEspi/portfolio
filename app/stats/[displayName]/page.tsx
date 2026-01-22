@@ -326,6 +326,10 @@ async function loadStats(displayName: string) {
       0,
   );
 
+  console.log("[stats] topWinners:", topWinners);
+  console.log("[stats] topLosers:", topLosers);
+  console.log("[stats] topActive:", topActive);
+
 
   return {
     ok: true as const,
