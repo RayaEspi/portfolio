@@ -461,7 +461,7 @@ export default async function DealerStatsPage({
                           <li key={p.name} className="flex items-center justify-between gap-3">
                         <span className="truncate text-zinc-800">
                           <span className="mr-2 text-xs text-zinc-500">#{idx + 1}</span>
-                          <span className="font-medium text-zinc-900">{p.name}</span>
+                          <span className="font-medium text-zinc-900">{p.playerTag}</span>
                         </span>
                             <span className="shrink-0 font-medium text-zinc-900">{fmtMoney(p.net)}</span>
                           </li>
@@ -483,7 +483,7 @@ export default async function DealerStatsPage({
                           <li key={p.name} className="flex items-center justify-between gap-3">
                         <span className="truncate text-zinc-800">
                           <span className="mr-2 text-xs text-zinc-500">#{idx + 1}</span>
-                          <span className="font-medium text-zinc-900">{p.name}</span>
+                          <span className="font-medium text-zinc-900">{p.playerTag}</span>
                         </span>
                             <span className="shrink-0 font-medium text-zinc-900">{fmtMoney(p.net)}</span>
                           </li>
@@ -505,7 +505,7 @@ export default async function DealerStatsPage({
                           <li key={p.name} className="flex items-center justify-between gap-3">
                         <span className="truncate text-zinc-800">
                           <span className="mr-2 text-xs text-zinc-500">#{idx + 1}</span>
-                          <span className="font-medium text-zinc-900">{p.name}</span>
+                          <span className="font-medium text-zinc-900">{p.playerTag}</span>
                         </span>
                             <span className="shrink-0 font-medium text-zinc-900">{fmtInt(p.games)}</span>
                           </li>
