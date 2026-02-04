@@ -400,7 +400,11 @@ export default async function DealerStatsPage({
   }
 
   const data = result;
-  const title = data.newestHostTag || data.displayName;
+  let title = data.newestHostTag || data.displayName;
+
+  if (title === "Rini Espi@Alpha") {
+    title = "Lini Espi @ Alpha";
+  }
 
   return (
     <div className="mx-auto min-h-screen w-full max-w-5xl px-4 py-10">
