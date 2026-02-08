@@ -6,18 +6,21 @@ const portfolioItems = [
     title: "Quiet Confidence",
     description: "A gentle, flowing idle animation with subtle swaying movements",
     type: "Idle Pose",
+    image: "/velvet/portfolio1.png",
   },
   {
     id: 2,
     title: "Soft Claim",
     description: "A warm couples animation for embracing partners",
     type: "Couples Pose",
+    image: "/velvet/portfolio2.png",
   },
   {
     id: 3,
     title: "Anactoria",
     description: "A sitting idle animation with cute leg movements",
     type: "Sitting Idle Pose",
+    image: "/velvet/portfolio3.png",
   },
 ] as const;
 
@@ -180,14 +183,9 @@ export default function VelvetPage() {
                 className="velvet-card group overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_40px_hsl(340_50%_40%_/_0.2)]"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className="relative aspect-[4/5] bg-gradient-to-br from-secondary/50 to-secondary/20 flex items-center justify-center">
-                  <div className="flex flex-col items-center text-muted-foreground/60">
-                    <Icon className="text-4xl opacity-50">▶</Icon>
-                    <span className="text-xs">Preview</span>
-                  </div>
-
-                  <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
+                <div className="relative aspect-[4/5] bg-gradient-to-br from-secondary/50 to-secondary/20 flex items-center justify-center"
+                     style={{ backgroundImage: `url(${item.image})`, backgroundSize: "cover", backgroundPosition: "center" }}
+                >
                   <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-background/80 backdrop-blur-sm border border-border/50">
                     <span className="text-xs text-velvet-soft">{item.type}</span>
                   </div>
