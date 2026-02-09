@@ -402,7 +402,7 @@ export default async function DealerStatsPage({
   const data = result;
   let title = data.newestHostTag || data.displayName;
 
-  if (title === "Rini Espi@Alpha") {
+  if (title === "Lini White@Alpha") {
     title = "Lini Espi @ Alpha";
   }
 
