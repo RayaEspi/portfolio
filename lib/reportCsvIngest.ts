@@ -18,16 +18,22 @@ type StatsHostDoc = Record<string, any>;
 function parseReportDateTime(input: string): Date | null {
   const s = (input ?? "").trim();
   const m = s.match(
-      /^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{1,2})[.:](\d{2})[.:](\d{2})(?:\s+([+-]\d{2}:\d{2}|Z))?$/
+      /^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2})[.:](\d{2})[.:](\d{2})(?:\s+([+-]\d{2}:\d{2}|Z))?$/
   );
   if (!m) return null;
 
-  const [, dd, mm, yyyy, HHraw, MM, SS, tz] = m;
+  const [, ddRaw, mmRaw, yyyy, HHraw, MM, SS, tz] = m;
+
+  const dd = ddRaw.padStart(2, "0");
+  const mm = mmRaw.padStart(2, "0");
   const HH = HHraw.padStart(2, "0");
-  const iso = `${yyyy}-${mm}-${dd}T${HH}:${MM}:${SS}${tz ? tz : ""}`;
+
+  const iso = `${yyyy}-${mm}-${dd}T${HH}:${MM}:${SS}${tz ?? ""}`;
+
   const d = new Date(iso);
   return Number.isNaN(d.getTime()) ? null : d;
 }
+
 
 
 
@@ -85,12 +91,17 @@ function parseReportCsv(text: string): { rows: ReportRow[]; invalid: number } {
     const parts = splitCsvLine(nonEmpty[i], delimiter);
     const sourceDateTime = (parts[idxDate] ?? "").trim();
     const detailsBase64 = (parts[idxDetails] ?? "").trim();
+
+    console.log("SourceDateTime:", sourceDateTime);
+
     if (!sourceDateTime || !detailsBase64) {
+      console.log(`Missing required fields at line ${i + 1}: Date and time="${sourceDateTime}"}"`);
       invalid++;
       continue;
     }
     const createdAt = parseReportDateTime(sourceDateTime);
     if (!createdAt) {
+      console.log(`Invalid date format at line ${i + 1}: "${sourceDateTime}"`);
       invalid++;
       continue;
     }
