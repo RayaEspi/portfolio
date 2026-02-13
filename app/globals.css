@@ -365,3 +365,11 @@ body {
 .creative-hub-scope .animate-spin-slow { animation: creative-hub-spin-slow 20s linear infinite; }
 .creative-hub-scope .animate-pulse-pink { animation: creative-hub-pulse-pink 3s ease-in-out infinite; }
 .creative-hub-scope .animate-marquee { animation: creative-hub-marquee 30s linear infinite; }
+
+
+/* ------------------------------ */
+/* Dealer stats */
+
+.d-stats, .d-stats canvas {
+  max-height: 305px;
+}
