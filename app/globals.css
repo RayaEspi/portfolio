@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Quicksand:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
 @import "tailwindcss";
 
 
@@ -236,3 +237,131 @@ body {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ------------------------------ */
+/* Creative Hub scoped theme      */
+/* ------------------------------ */
+
+@font-face {
+  font-family: 'Old London';
+  src: url('/fonts/OldLondon.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.creative-hub-scope {
+  --background: hsl(30 20% 97%);
+  --foreground: hsl(0 0% 8%);
+
+  --card: hsl(30 15% 95%);
+  --card-foreground: hsl(0 0% 8%);
+
+  --muted: hsl(30 10% 92%);
+  --muted-foreground: hsl(0 0% 40%);
+
+  --primary: #ff9fc6;
+  --primary-foreground: hsl(0 0% 8%);
+
+  --secondary: hsl(30 10% 90%);
+  --secondary-foreground: hsl(0 0% 12%);
+
+  --border: hsl(0 0% 80%);
+  --input: hsl(0 0% 80%);
+  --ring: #ff9fc6;
+
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Space Mono', monospace;
+}
+
+.creative-hub-scope h1,
+.creative-hub-scope h2,
+.creative-hub-scope h3,
+.creative-hub-scope h4,
+.creative-hub-scope h5,
+.creative-hub-scope h6 {
+  font-family: 'Playfair Display', serif;
+}
+
+.creative-hub-scope .font-display { font-family: 'Playfair Display', serif; }
+.creative-hub-scope .font-body { font-family: 'Space Mono', monospace; }
+.creative-hub-scope .font-gothic { font-family: 'Old London', cursive; }
+
+.creative-hub-scope .text-glow {
+  text-shadow: 0 0 20px color-mix(in oklab, var(--primary) 50%, transparent),
+               0 0 40px color-mix(in oklab, var(--primary) 20%, transparent);
+}
+
+.creative-hub-scope .gothic-border {
+  border: 1px solid var(--foreground);
+  box-shadow: 3px 3px 0px var(--foreground);
+}
+
+.creative-hub-scope .gothic-border-pink {
+  border: 1px solid var(--primary);
+  box-shadow: 3px 3px 0px var(--primary);
+}
+
+.creative-hub-scope .hover-glitch:hover {
+  animation: creative-hub-glitch 0.3s ease-in-out;
+}
+
+@keyframes creative-hub-glitch {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(2px, -2px); }
+  60% { transform: translate(-1px, -1px); }
+  80% { transform: translate(1px, 1px); }
+  100% { transform: translate(0); }
+}
+
+/* Scrollbar hiding for carousels */
+.creative-hub-scope .scrollbar-hide::-webkit-scrollbar { display: none; }
+.creative-hub-scope .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Animations (tailwind-ish class names) */
+@keyframes creative-hub-float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(3deg); }
+}
+
+@keyframes creative-hub-float-reverse {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(20px) rotate(-3deg); }
+}
+
+@keyframes creative-hub-spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes creative-hub-pulse-pink {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes creative-hub-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.gothic-border .gothic-spacer {
+  aspect-ratio: 3 / 3 !important;
+}
+
+.gothic-border .gothic-para {
+  padding: 5px calc(var(--spacing) * 4);
+}
+
+.gothic-border .gothic-para .text-foreground {
+  color: white;
+  font-size: 24px;
+}
+
+
+.creative-hub-scope .animate-float { animation: creative-hub-float 6s ease-in-out infinite; }
+.creative-hub-scope .animate-float-reverse { animation: creative-hub-float-reverse 7s ease-in-out infinite; }
+.creative-hub-scope .animate-spin-slow { animation: creative-hub-spin-slow 20s linear infinite; }
+.creative-hub-scope .animate-pulse-pink { animation: creative-hub-pulse-pink 3s ease-in-out infinite; }
+.creative-hub-scope .animate-marquee { animation: creative-hub-marquee 30s linear infinite; }
