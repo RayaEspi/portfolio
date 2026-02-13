@@ -59,7 +59,7 @@ export function Hero() {
             </a>
             <a
               href="#"
-              className="gothic-border px-6 py-3 text-xs font-body uppercase tracking-widest text-foreground hover:bg-foreground hover:text-background transition-colors"
+              className="hidden gothic-border px-6 py-3 text-xs font-body uppercase tracking-widest text-foreground hover:bg-foreground hover:text-background transition-colors"
             >
               Contact
             </a>
