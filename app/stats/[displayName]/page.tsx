@@ -2,10 +2,13 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ensureAuthCollections, ensureGameCollections, getDb, type UserDoc } from "@/lib/db";
 import { playerTagToParts } from "@/lib/gameIngest";
+import { DealerStats } from "./DealerStats";
+import {LogoutButton} from "@/app/admin/LogoutButton";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+let uID;
 function escapeRegex(input: string) {
   return input.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -179,6 +182,7 @@ async function loadStats(displayName: string): Promise<LoadStatsResult> {
   }
 
   const uploaderId = user._id.toHexString();
+  uID = uploaderId;
 
   const newestGame = await games.findOne(
     { uploaderId },
@@ -399,12 +403,33 @@ export async function generateMetadata({
   return { title };
 }
 
+// get id with displayName
+function getIdFromDisplayName(displayName: string): Promise<string | null> {
+  return new Promise(async (resolve) => {
+    await ensureAuthCollections();
+    const db = await getDb();
+    const users = db.collection<UserDoc>("users");
+
+    const user = await users.findOne(
+        { name: displayName },
+        { collation: { locale: "en", strength: 2 }, projection: { _id: 1 } }
+    );
+
+    if (user?._id) {
+      resolve(user._id.toHexString());
+    } else {
+      resolve(null);
+    }
+  });
+}
+
 export default async function DealerStatsPage({
                                                 params,
                                               }: {
   params: Promise<{ displayName: string }>;
 }) {
   const { displayName } = await params;
+  const uploaderID = await getIdFromDisplayName(displayName);
 
   const result = await loadStats(displayName);
   console.log("[stats] displayName:", displayName);
@@ -556,6 +581,15 @@ export default async function DealerStatsPage({
                 </ol>
               </div>
             </div>
+
+            {uploaderID ? (
+                <DealerStats uploaderId={uploaderID}/>
+            ) : (
+                <div className="mt-6 rounded-2xl border border-zinc-200 bg-white p-4 text-sm text-zinc-700">
+                  Could not resolve uploader ID for this display name.
+                </div>
+            )}
+
 
             <div className="mt-6 rounded-2xl border border-[#FF9FC6]/35 bg-white/80 p-4 text-xs text-zinc-700 shadow-[0_0_0_1px_rgba(255,159,198,0.10)]">
               Stats are usually updated after each hosting session.
