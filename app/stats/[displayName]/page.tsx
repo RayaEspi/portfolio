@@ -55,7 +55,43 @@ type PlayerAggRow = {
   net: number;
 };
 
-async function loadStats(displayName: string) {
+export type LoadStatsPlayerRow = {
+  playerTag: string;
+  name: string;
+  world: string;
+  games: number;
+  betTotal: number;
+  payoutTotal: number;
+  net: number;
+};
+
+export type LoadStatsDebug = {
+  db: string;
+  lookedFor: string;
+  normalized: string;
+  sampleNames: string[];
+};
+
+export type LoadStatsResult =
+    | { ok: false }
+    | { ok: false; debug: LoadStatsDebug }
+    | {
+  ok: true;
+  displayName: string;
+  newestHostTag: string; // your code returns "" when missing
+  roundsHosted: number;
+  totalNet: number;
+  dealerNet: number;
+  totalBet: number;
+  totalPayout: number;
+  playerNet: number;
+  topWinners: LoadStatsPlayerRow[];
+  topLosers: LoadStatsPlayerRow[];
+  topActive: LoadStatsPlayerRow[];
+  totalPlayers: number;
+};
+
+async function loadStats(displayName: string): Promise<LoadStatsResult> {
   await ensureAuthCollections();
   await ensureGameCollections();
 
