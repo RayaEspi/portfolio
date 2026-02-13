@@ -344,18 +344,18 @@ async function loadStats(displayName: string): Promise<LoadStatsResult> {
   const topWinners = mergedPlayers
       .filter((p) => p.net > 0 && !blacklistedTagsForUploader.has(norm(p.playerTag ?? "")))
       .sort((a, b) => b.net - a.net)
-      .slice(0, 10);
+      .slice(0, 20);
 
   const topLosers = mergedPlayers
       .filter((p) => p.net < 0 && !blacklistedTagsForUploader.has(norm(p.playerTag ?? "")))
     .sort((a, b) => a.net - b.net)
-    .slice(0, 10);
+    .slice(0, 20);
 
   const topActive = mergedPlayers
     .filter(p => !blacklistedTagsForUploader.has(norm(p.playerTag ?? "")))
     .slice()
     .sort((a, b) => b.games - a.games || b.betTotal - a.betTotal)
-    .slice(0, 10);
+    .slice(0, 20);
 
   const totalNet = mergedPlayers.reduce(
       (sum, p) => sum + ((Number(p.payoutTotal) || 0) - (Number(p.betTotal) || 0)),
