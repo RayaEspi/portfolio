@@ -96,13 +96,11 @@ export function DealerStats({ uploaderId }: { uploaderId: string }) {
                             const label = String(ctx.label ?? "");
                             const value = Number(ctx.parsed) || 0;
 
-                            // Dataset total
                             const dataArr = (ctx.dataset?.data ?? []) as Array<number | string>;
-                            const total = dataArr.reduce((acc, v) => acc + (Number(v) || 0), 0);
+                            const total = dataArr.reduce<number>((acc, v) => acc + (Number(v) || 0), 0);
 
                             const pct = total > 0 ? (value / total) * 100 : 0;
 
-                            // Example: "17: 42 (12.3%)"
                             return `${label}: ${value} (${pct.toFixed(1)}%)`;
                         },
                     },
