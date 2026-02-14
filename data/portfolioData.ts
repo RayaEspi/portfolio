@@ -54,6 +54,11 @@ export const portfolioData: PortfolioSection[] = [
         title: "Galaxy Mask",
         image: "/img/mask.png",
         downloadUrl: "#",
+      },
+      {
+        title: "Starry ears",
+        image: "/img/stars.png",
+        downloadUrl: "#",
       }
     ],
   },
